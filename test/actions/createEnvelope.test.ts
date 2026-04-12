@@ -54,6 +54,17 @@ describe('createEnvelope action', () => {
     );
   });
 
+  it('throws z.errors.Error when documents is not an array', async () => {
+    const bundle = {
+      authData: { apiKey: 'test_key' },
+      inputData: { requesterName: 'Acme', documents: '{"key":"value"}' },
+    } as any;
+
+    await expect((createEnvelope.operation.perform as Function)(z, bundle)).rejects.toBeInstanceOf(
+      z.errors.Error,
+    );
+  });
+
   it('rethrows API errors as z.errors.Error', async () => {
     mockClient.createEnvelope.mockRejectedValue(new Error('Bad request'));
     const bundle = {

@@ -41,6 +41,11 @@ export const createEnvelope = {
         throw new z.errors.Error('The "Documents" field must be a valid JSON array.');
       }
 
+      if (!Array.isArray(documents)) {
+        throw new z.errors.Error('The "Documents" field must be a valid JSON array.');
+      }
+
+      // pdfgate@1.0.4 types don't include createEnvelope — cast until types are updated
       const client = getClient(bundle) as any;
       return withErrorHandling(z, () =>
         client.createEnvelope({

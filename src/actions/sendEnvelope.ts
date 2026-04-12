@@ -26,6 +26,7 @@ export const sendEnvelope = {
       },
     ],
     perform: async (z: ZObject, bundle: Bundle) => {
+      // pdfgate@1.0.4 types don't include sendEnvelope — cast until types are updated
       const client = getClient(bundle) as any;
       return withErrorHandling(z, () =>
         client.sendEnvelope({ id: bundle.inputData.envelopeId as string }),

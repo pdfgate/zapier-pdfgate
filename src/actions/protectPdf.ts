@@ -65,6 +65,13 @@ export const protectPdf = {
         required: false,
       },
       {
+        key: 'encryptMetadata',
+        label: 'Encrypt Metadata',
+        type: 'boolean' as const,
+        required: false,
+        helpText: 'Whether to encrypt PDF metadata (default: false).',
+      },
+      {
         key: 'preSignedUrlExpiresIn',
         label: 'Pre-Signed URL Expiry (seconds)',
         type: 'integer' as const,

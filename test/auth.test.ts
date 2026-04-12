@@ -1,7 +1,10 @@
 import { authentication } from '../src/auth';
-import { getClient } from '../src/client';
+import { getClient, withErrorHandling } from '../src/client';
 
-jest.mock('../src/client');
+jest.mock('../src/client', () => ({
+  ...jest.requireActual('../src/client'),
+  getClient: jest.fn(),
+}));
 const mockGetClient = getClient as jest.Mock;
 
 const z = {
@@ -33,5 +36,25 @@ describe('authentication', () => {
 
     const bundle = { authData: { apiKey: 'test_badkey' } } as any;
     await expect(authentication.test(z, bundle)).rejects.toThrow();
+  });
+});
+
+describe('withErrorHandling', () => {
+  it('passes through the return value on success', async () => {
+    const result = await withErrorHandling(z, async () => 'ok');
+    expect(result).toBe('ok');
+  });
+
+  it('rethrows as z.errors.Error on generic failure', async () => {
+    await expect(
+      withErrorHandling(z, async () => { throw new Error('something broke'); }),
+    ).rejects.toBeInstanceOf(z.errors.Error);
+  });
+
+  it('rethrows with auth message on 401', async () => {
+    const err = Object.assign(new Error('Unauthorized'), { status: 401 });
+    await expect(
+      withErrorHandling(z, async () => { throw err; }),
+    ).rejects.toThrow('PDFGate authentication failed');
   });
 });

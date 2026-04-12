@@ -9,6 +9,11 @@ export const withErrorHandling = async <T>(z: ZObject, fn: () => Promise<T>): Pr
   try {
     return await fn();
   } catch (err: any) {
+    if (err.status === 401 || (err.message && err.message.includes('401'))) {
+      throw new z.errors.Error(
+        'PDFGate authentication failed. Please reconnect your PDFGate account in Zapier.',
+      );
+    }
     throw new z.errors.Error(err.message ?? 'An error occurred with the PDFGate API.');
   }
 };

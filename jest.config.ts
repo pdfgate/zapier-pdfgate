@@ -5,7 +5,6 @@ const config: Config = {
   testEnvironment: 'node',
   testMatch: ['**/test/**/*.test.ts'],
   testPathIgnorePatterns: ['/node_modules/'],
-  passWithNoTests: true,
   globals: {
     'ts-jest': {
       tsconfig: 'tsconfig.jest.json',

@@ -11,6 +11,9 @@ import { createEnvelope } from './actions/createEnvelope';
 import { sendEnvelope } from './actions/sendEnvelope';
 import { getDocument } from './searches/getDocument';
 import { getEnvelope } from './searches/getEnvelope';
+import { envelopeInProgress } from './triggers/envelopeInProgress';
+import { envelopeCompleted } from './triggers/envelopeCompleted';
+import { envelopeExpired } from './triggers/envelopeExpired';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { version } = require('../package.json') as { version: string };
@@ -19,7 +22,11 @@ const App = {
   version,
   platformVersion,
   authentication,
-  triggers: {},
+  triggers: {
+    [envelopeInProgress.key]: envelopeInProgress,
+    [envelopeCompleted.key]: envelopeCompleted,
+    [envelopeExpired.key]: envelopeExpired,
+  },
   searches: {
     [getDocument.key]: getDocument,
     [getEnvelope.key]: getEnvelope,

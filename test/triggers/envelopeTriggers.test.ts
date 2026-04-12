@@ -1,12 +1,11 @@
 import { envelopeInProgress } from '../../src/triggers/envelopeInProgress';
 import { envelopeCompleted } from '../../src/triggers/envelopeCompleted';
 import { envelopeExpired } from '../../src/triggers/envelopeExpired';
-import { verifySignature, PdfGateSignatureVerificationError } from 'pdfgate';
+import { verifySignature, PdfGateSignatureVerificationError } from '../../src/lib/webhookVerification';
 
-jest.mock('pdfgate', () => ({
+jest.mock('../../src/lib/webhookVerification', () => ({
   verifySignature: jest.fn(),
   PdfGateSignatureVerificationError: class extends Error {},
-  default: jest.fn(),
 }));
 
 const mockVerifySignature = verifySignature as jest.Mock;

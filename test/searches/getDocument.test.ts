@@ -33,8 +33,19 @@ describe('getDocument search', () => {
 
     const result = await (getDocument.operation.perform as Function)(z, bundle);
 
-    expect(mockClient.getDocument).toHaveBeenCalledWith({ id: 'doc_123' });
+    expect(mockClient.getDocument).toHaveBeenCalledWith({ id: 'doc_123', preSignedUrlExpiresIn: undefined });
     expect(result).toEqual([mockDocument]);
+  });
+
+  it('passes preSignedUrlExpiresIn to the SDK', async () => {
+    const bundle = {
+      authData: { apiKey: 'test_key' },
+      inputData: { documentId: 'doc_123', preSignedUrlExpiresIn: 3600 },
+    } as any;
+
+    await (getDocument.operation.perform as Function)(z, bundle);
+
+    expect(mockClient.getDocument).toHaveBeenCalledWith({ id: 'doc_123', preSignedUrlExpiresIn: 3600 });
   });
 
   it('rethrows API errors as z.errors.Error', async () => {

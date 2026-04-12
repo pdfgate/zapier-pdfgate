@@ -9,6 +9,8 @@ import { protectPdf } from './actions/protectPdf';
 import { watermarkPdf } from './actions/watermarkPdf';
 import { createEnvelope } from './actions/createEnvelope';
 import { sendEnvelope } from './actions/sendEnvelope';
+import { getDocument } from './searches/getDocument';
+import { getEnvelope } from './searches/getEnvelope';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { version } = require('../package.json') as { version: string };
@@ -18,7 +20,10 @@ const App = {
   platformVersion,
   authentication,
   triggers: {},
-  searches: {},
+  searches: {
+    [getDocument.key]: getDocument,
+    [getEnvelope.key]: getEnvelope,
+  },
   creates: {
     [generatePdf.key]: generatePdf,
     [uploadFile.key]: uploadFile,

@@ -6,6 +6,7 @@ import { flattenPdf } from './actions/flattenPdf';
 import { compressPdf } from './actions/compressPdf';
 import { extractFormData } from './actions/extractFormData';
 import { protectPdf } from './actions/protectPdf';
+import { watermarkPdf } from './actions/watermarkPdf';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { version } = require('../package.json') as { version: string };
@@ -23,6 +24,7 @@ const App = {
     [compressPdf.key]: compressPdf,
     [extractFormData.key]: extractFormData,
     [protectPdf.key]: protectPdf,
+    [watermarkPdf.key]: watermarkPdf,
   },
 };
 

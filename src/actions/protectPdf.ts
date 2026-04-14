@@ -33,16 +33,16 @@ export const protectPdf = {
         helpText: 'Defaults to AES256.',
       },
       {
-        key: 'userPassword',
+        key: 'userPin',
         label: 'User Password',
-        type: 'password' as const,
+        type: 'string' as const,
         required: false,
         helpText: 'Password required to open the PDF.',
       },
       {
-        key: 'ownerPassword',
+        key: 'ownerPin',
         label: 'Owner Password',
-        type: 'password' as const,
+        type: 'string' as const,
         required: false,
         helpText: 'Full-control password. Required when using AES256 with a user password.',
       },
@@ -80,7 +80,13 @@ export const protectPdf = {
     ],
     perform: async (z: ZObject, bundle: Bundle) => {
       const client = getClient(bundle);
-      return withErrorHandling(z, () => client.protectPdf(bundle.inputData as any));
+      const { userPin, ownerPin, ...rest } = bundle.inputData as any;
+      const params = {
+        ...rest,
+        ...(userPin !== undefined && { userPassword: userPin }),
+        ...(ownerPin !== undefined && { ownerPassword: ownerPin }),
+      };
+      return withErrorHandling(z, () => client.protectPdf(params));
     },
     sample: SAMPLE,
   },

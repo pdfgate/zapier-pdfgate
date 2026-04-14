@@ -1,6 +1,6 @@
 {
   "name": "zapier-pdfgate",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "PDFGate Zapier Integration",
   "main": "dist/index.js",
   "scripts": {

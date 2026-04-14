@@ -13,7 +13,7 @@
     "node": ">=18"
   },
   "dependencies": {
-    "pdfgate": "^1.0.4",
+    "pdfgate": "^1.0.6",
     "zapier-platform-core": "^15.0.0"
   },
   "devDependencies": {

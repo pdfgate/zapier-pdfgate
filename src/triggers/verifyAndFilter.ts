@@ -1,5 +1,5 @@
 import { Bundle, ZObject } from 'zapier-platform-core';
-import { verifySignature, PdfGateSignatureVerificationError } from '../lib/webhookVerification';
+import { verifySignature, PdfGateSignatureVerificationError } from 'pdfgate';
 
 export const verifyAndFilter = async (
   z: ZObject,

@@ -21,7 +21,7 @@ export const extractFormData = {
     perform: async (z: ZObject, bundle: Bundle) => {
       const client = getClient(bundle);
       return withErrorHandling(z, () =>
-        client.extractPdfFormData({ documentId: bundle.inputData.documentId }),
+        client.extractPdfFormData({ documentId: bundle.inputData.documentId as string }),
       );
     },
     sample: { fieldName: 'sampleValue' },

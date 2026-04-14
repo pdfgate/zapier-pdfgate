@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "pdfgate": "^1.0.6",
-    "zapier-platform-core": "^15.0.0"
+    "zapier-platform-core": "15.19.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",

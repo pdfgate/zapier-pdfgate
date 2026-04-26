@@ -12,10 +12,10 @@ const z = {
 } as any;
 
 describe('authentication', () => {
-  it('has required fields for apiKey and webhookSecret', () => {
+  it('has the required apiKey field', () => {
     const fields = authentication.fields;
     expect(fields.find((f: any) => f.key === 'apiKey')).toBeDefined();
-    expect(fields.find((f: any) => f.key === 'webhookSecret')).toBeDefined();
+    expect(fields.find((f: any) => f.key === 'webhookSecret')).toBeUndefined();
   });
 
   it('passes auth test when getDocument returns 404', async () => {

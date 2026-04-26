@@ -23,14 +23,6 @@ export const authentication = {
       type: 'string' as const,
       helpText: 'Your PDFGate API key. Must start with `test_` (sandbox) or `live_` (production).',
     },
-    {
-      key: 'webhookSecret',
-      label: 'Webhook Secret',
-      required: false,
-      type: 'string' as const,
-      helpText:
-        'Your PDFGate webhook signing secret. Required for envelope triggers. Find it in PDFGate Dashboard → Settings → Webhooks.',
-    },
   ],
   test,
   connectionLabel: '{{bundle.authData.apiKey}}',

@@ -6,7 +6,8 @@ export const verifyAndFilter = async (
   bundle: Bundle,
   eventType: string,
 ): Promise<object[]> => {
-  const secret = bundle.authData.webhookSecret as string;
+  const subscribeData = bundle.subscribeData as { secret?: string } | undefined;
+  const secret = subscribeData?.secret || (bundle.authData.webhookSecret as string);
   const signatureHeader = (bundle.rawRequest?.headers?.['x-pdfgate-signature'] as string) ?? '';
   const rawBody = (bundle.rawRequest?.content as string) ?? '';
 

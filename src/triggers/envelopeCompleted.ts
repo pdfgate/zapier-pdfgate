@@ -1,10 +1,12 @@
 import { Bundle, ZObject } from 'zapier-platform-core';
 import { verifyAndFilter } from './verifyAndFilter';
+import { getWebhookSample, subscribeWebhook, unsubscribeWebhook } from '../webhooks';
 
 const SAMPLE = {
+  eventId: 'evt_sample',
   event: 'envelope.completed',
-  envelopeId: 'env_sample',
-  status: 'completed',
+  resource: { kind: 'envelope', id: 'env_sample' },
+  data: { envelope: { id: 'env_sample', status: 'completed', documents: [] } },
 };
 
 export const envelopeCompleted = {
@@ -13,12 +15,17 @@ export const envelopeCompleted = {
   display: {
     label: 'Envelope Completed',
     description:
-      'Triggers when all recipients have signed a PDFGate envelope. Set up: copy the webhook URL below and paste it in PDFGate Dashboard → Settings → Webhooks → Create.',
+      'Triggers when all recipients have signed a PDFGate envelope.',
   },
   operation: {
     type: 'hook' as const,
+    performSubscribe: (z: ZObject, bundle: Bundle) =>
+      subscribeWebhook(z, bundle, ['envelope.completed']),
+    performUnsubscribe: unsubscribeWebhook,
     perform: (z: ZObject, bundle: Bundle) =>
       verifyAndFilter(z, bundle, 'envelope.completed'),
+    performList: (z: ZObject, bundle: Bundle) =>
+      getWebhookSample(z, bundle, 'envelope-completed-sample'),
     sample: SAMPLE,
   },
 };

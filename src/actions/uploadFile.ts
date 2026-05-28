@@ -2,11 +2,34 @@ import { Bundle, ZObject } from 'zapier-platform-core';
 import { getClient, withErrorHandling } from '../client';
 
 const SAMPLE_DOCUMENT = {
-  id: 'doc_sample456',
+  id: '6a12d80d8ce4ed8f2d3e5b86',
   status: 'completed',
   type: 'uploaded',
   createdAt: '2024-01-01T00:00:00.000Z',
   expiresAt: '2024-01-08T00:00:00.000Z',
+};
+
+const buildUploadFileRequest = (z: ZObject, inputData: Bundle['inputData']) => {
+  const request = { ...inputData };
+
+  if (request.metadata === undefined || request.metadata === null || request.metadata === '') {
+    delete request.metadata;
+    return request;
+  }
+
+  if (typeof request.metadata === 'string') {
+    try {
+      request.metadata = JSON.parse(request.metadata);
+    } catch {
+      throw new z.errors.Error('The "metadata" field must be a valid JSON object.');
+    }
+  }
+
+  if (typeof request.metadata !== 'object' || Array.isArray(request.metadata)) {
+    throw new z.errors.Error('The "metadata" field must be a valid JSON object.');
+  }
+
+  return request;
 };
 
 export const uploadFile = {
@@ -32,11 +55,22 @@ export const uploadFile = {
         required: false,
         helpText: 'Seconds until the file URL expires (min 60, max 86400).',
       },
+      {
+        key: 'metadata',
+        label: 'Metadata (JSON)',
+        type: 'json' as const,
+        required: false,
+        helpText: 'Custom data to store on the document record.',
+        schema: {
+          type: 'object',
+          additionalProperties: true,
+        },
+      },
     ],
     perform: async (z: ZObject, bundle: Bundle) => {
       const client = getClient(bundle);
       return withErrorHandling(z, () =>
-        client.uploadFile(bundle.inputData as any),
+        client.uploadFile(buildUploadFileRequest(z, bundle.inputData) as any),
       );
     },
     sample: SAMPLE_DOCUMENT,

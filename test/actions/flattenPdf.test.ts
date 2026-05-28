@@ -28,13 +28,27 @@ describe('flattenPdf action', () => {
   it('calls flattenPdf with documentId', async () => {
     const bundle = {
       authData: { apiKey: 'test_key' },
-      inputData: { documentId: 'doc_123' },
+      inputData: { documentId: 'doc_123', metadata: '{"source":"zapier"}' },
     } as any;
 
     const result = await (flattenPdf.operation.perform as Function)(z, bundle);
 
-    expect(mockClient.flattenPdf).toHaveBeenCalledWith({ documentId: 'doc_123' });
+    expect(mockClient.flattenPdf).toHaveBeenCalledWith({
+      documentId: 'doc_123',
+      metadata: { source: 'zapier' },
+    });
     expect(result).toEqual(mockDocument);
+  });
+
+  it('throws z.errors.Error when metadata is invalid JSON', async () => {
+    const bundle = {
+      authData: { apiKey: 'test_key' },
+      inputData: { documentId: 'doc_123', metadata: 'not-json' },
+    } as any;
+
+    await expect((flattenPdf.operation.perform as Function)(z, bundle)).rejects.toBeInstanceOf(
+      z.errors.Error,
+    );
   });
 
   it('rethrows API errors as z.errors.Error', async () => {

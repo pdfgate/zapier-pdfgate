@@ -28,13 +28,28 @@ describe('compressPdf action', () => {
   it('calls compressPdf with documentId and optional linearize', async () => {
     const bundle = {
       authData: { apiKey: 'test_key' },
-      inputData: { documentId: 'doc_123', linearize: true },
+      inputData: { documentId: 'doc_123', linearize: true, metadata: '{"source":"zapier"}' },
     } as any;
 
     const result = await (compressPdf.operation.perform as Function)(z, bundle);
 
-    expect(mockClient.compressPdf).toHaveBeenCalledWith({ documentId: 'doc_123', linearize: true });
+    expect(mockClient.compressPdf).toHaveBeenCalledWith({
+      documentId: 'doc_123',
+      linearize: true,
+      metadata: { source: 'zapier' },
+    });
     expect(result).toEqual(mockDocument);
+  });
+
+  it('throws z.errors.Error when metadata is invalid JSON', async () => {
+    const bundle = {
+      authData: { apiKey: 'test_key' },
+      inputData: { documentId: 'doc_123', metadata: 'not-json' },
+    } as any;
+
+    await expect((compressPdf.operation.perform as Function)(z, bundle)).rejects.toBeInstanceOf(
+      z.errors.Error,
+    );
   });
 
   it('rethrows API errors as z.errors.Error', async () => {

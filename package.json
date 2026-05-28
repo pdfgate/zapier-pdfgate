@@ -1,6 +1,6 @@
 {
   "name": "zapier-pdfgate",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "PDFGate Zapier Integration",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "node": ">=18"
   },
   "dependencies": {
-    "pdfgate": "^1.0.6",
+    "pdfgate": "^1.0.7",
     "zapier-platform-core": "18.4.0"
   },
   "devDependencies": {

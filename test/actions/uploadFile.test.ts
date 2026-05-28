@@ -28,13 +28,27 @@ describe('uploadFile action', () => {
   it('calls uploadFile with url from inputData', async () => {
     const bundle = {
       authData: { apiKey: 'test_key' },
-      inputData: { url: 'https://example.com/file.pdf' },
+      inputData: { url: 'https://example.com/file.pdf', metadata: '{"source":"zapier"}' },
     } as any;
 
     const result = await (uploadFile.operation.perform as Function)(z, bundle);
 
-    expect(mockClient.uploadFile).toHaveBeenCalledWith({ url: 'https://example.com/file.pdf' });
+    expect(mockClient.uploadFile).toHaveBeenCalledWith({
+      url: 'https://example.com/file.pdf',
+      metadata: { source: 'zapier' },
+    });
     expect(result).toEqual(mockDocument);
+  });
+
+  it('throws z.errors.Error when metadata is invalid JSON', async () => {
+    const bundle = {
+      authData: { apiKey: 'test_key' },
+      inputData: { url: 'https://example.com/file.pdf', metadata: 'not-json' },
+    } as any;
+
+    await expect((uploadFile.operation.perform as Function)(z, bundle)).rejects.toBeInstanceOf(
+      z.errors.Error,
+    );
   });
 
   it('rethrows API errors as z.errors.Error', async () => {

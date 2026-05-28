@@ -1,6 +1,6 @@
 import { Bundle, ZObject } from 'zapier-platform-core';
 import { verifyAndFilter } from './verifyAndFilter';
-import { getWebhookSample, subscribeWebhook, unsubscribeWebhook } from '../webhooks';
+import { subscribeWebhook, unsubscribeWebhook } from '../webhooks';
 
 const SAMPLE = {
   eventId: 'evt_sample',
@@ -24,8 +24,7 @@ export const envelopeExpired = {
     performUnsubscribe: unsubscribeWebhook,
     perform: (z: ZObject, bundle: Bundle) =>
       verifyAndFilter(z, bundle, 'envelope.expired'),
-    performList: (z: ZObject, bundle: Bundle) =>
-      getWebhookSample(z, bundle, 'envelope-expired-sample'),
+    performList: () => [SAMPLE],
     sample: SAMPLE,
   },
 };

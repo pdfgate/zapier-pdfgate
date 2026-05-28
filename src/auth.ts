@@ -13,6 +13,17 @@ const test = async (z: ZObject, bundle: Bundle): Promise<void> => {
   }
 };
 
+const connectionLabel = (z: ZObject, bundle: Bundle): string => {
+  const apiKey = bundle.authData.apiKey as string | undefined;
+  if (apiKey?.startsWith('live_')) {
+    return 'PDFGate Production Account';
+  }
+  if (apiKey?.startsWith('test_')) {
+    return 'PDFGate Sandbox Account';
+  }
+  return 'PDFGate Account';
+};
+
 export const authentication = {
   type: 'custom' as const,
   fields: [
@@ -21,9 +32,10 @@ export const authentication = {
       label: 'API Key',
       required: true,
       type: 'string' as const,
-      helpText: 'Your PDFGate API key. Must start with `test_` (sandbox) or `live_` (production).',
+      helpText:
+        'Your PDFGate API key. Must start with `test_` (sandbox) or `live_` (production). You can create one from the Settings page in your PDFGate dashboard. See the [PDFGate API documentation](https://pdfgate.com/documentation).',
     },
   ],
   test,
-  connectionLabel: '{{bundle.authData.apiKey}}',
+  connectionLabel,
 };

@@ -11,7 +11,7 @@ import { createEnvelope } from './actions/createEnvelope';
 import { sendEnvelope } from './actions/sendEnvelope';
 import { getDocument } from './searches/getDocument';
 import { getEnvelope } from './searches/getEnvelope';
-import { envelopeInProgress } from './triggers/envelopeInProgress';
+import { envelopeSent } from './triggers/envelopeSent';
 import { envelopeCompleted } from './triggers/envelopeCompleted';
 import { envelopeExpired } from './triggers/envelopeExpired';
 
@@ -21,11 +21,14 @@ const { version } = require('../package.json') as { version: string };
 const App = {
   version,
   platformVersion,
+  flags: {
+    cleanInputData: false,
+  },
   authentication,
   triggers: {
-    [envelopeInProgress.key]: envelopeInProgress,
+    [envelopeSent.key]: envelopeSent,
     [envelopeCompleted.key]: envelopeCompleted,
-    [envelopeExpired.key]: envelopeExpired,
+    //[envelopeExpired.key]: envelopeExpired, TODO: IMPLEMENT this on a later zapier release
   },
   searches: {
     [getDocument.key]: getDocument,

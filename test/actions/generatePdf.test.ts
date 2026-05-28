@@ -50,6 +50,97 @@ describe('generatePdf action', () => {
     expect(mockClient.generatePdf).toHaveBeenCalledWith({ html: '<h1>Hello</h1>' });
   });
 
+  it('passes expanded request params and builds nested object fields', async () => {
+    const bundle = {
+      authData: { apiKey: 'test_key' },
+      inputData: {
+        url: 'https://example.com',
+        preSignedUrlExpiresIn: 3600,
+        pageSizeType: 'letter',
+        width: 800,
+        height: 1200,
+        orientation: 'portrait',
+        header: '<div>Header</div>',
+        footer: '<div>Footer</div>',
+        marginTop: '20px',
+        marginBottom: '20px',
+        marginLeft: '10px',
+        marginRight: '10px',
+        timeout: 30000,
+        javascript: 'window.ready = true;',
+        css: 'body { color: black; }',
+        emulateMediaType: 'print',
+        waitForSelector: '#ready',
+        clickSelector: '#accept',
+        clickSelectorChainSetup: {
+          ignoreFailingChains: true,
+          chains: [{ selectors: ['#cookieDialog'] }],
+        },
+        waitForNetworkIdle: true,
+        delay: 1000,
+        loadImages: true,
+        scale: 1.2,
+        pageRanges: '1-3',
+        printBackground: true,
+        userAgent: 'PDFGate Zapier Test',
+        httpHeaders: { 'x-test': 'true' },
+        authenticationUsername: 'user',
+        authenticationAccessCode: 'pass',
+        viewportWidth: 1280,
+        viewportHeight: 720,
+        enableFormFields: true,
+        metadata: '{"source":"zapier"}',
+      },
+    } as any;
+
+    await (generatePdf.operation.perform as Function)(z, bundle);
+
+    expect(mockClient.generatePdf).toHaveBeenCalledWith({
+      url: 'https://example.com',
+      preSignedUrlExpiresIn: 3600,
+      pageSizeType: 'letter',
+      width: 800,
+      height: 1200,
+      orientation: 'portrait',
+      header: '<div>Header</div>',
+      footer: '<div>Footer</div>',
+      margin: { top: '20px', bottom: '20px', left: '10px', right: '10px' },
+      timeout: 30000,
+      javascript: 'window.ready = true;',
+      css: 'body { color: black; }',
+      emulateMediaType: 'print',
+      waitForSelector: '#ready',
+      clickSelector: '#accept',
+      clickSelectorChainSetup: {
+        ignoreFailingChains: true,
+        chains: [{ selectors: ['#cookieDialog'] }],
+      },
+      waitForNetworkIdle: true,
+      delay: 1000,
+      loadImages: true,
+      scale: 1.2,
+      pageRanges: '1-3',
+      printBackground: true,
+      userAgent: 'PDFGate Zapier Test',
+      httpHeaders: { 'x-test': 'true' },
+      authentication: { username: 'user', password: 'pass' },
+      viewport: { width: 1280, height: 720 },
+      enableFormFields: true,
+      metadata: { source: 'zapier' },
+    });
+  });
+
+  it('throws z.errors.Error when JSON object fields are invalid', async () => {
+    const bundle = {
+      authData: { apiKey: 'test_key' },
+      inputData: { url: 'https://example.com', metadata: 'not-json' },
+    } as any;
+
+    await expect((generatePdf.operation.perform as Function)(z, bundle)).rejects.toBeInstanceOf(
+      z.errors.Error,
+    );
+  });
+
   it('rethrows API errors as z.errors.Error', async () => {
     mockClient.generatePdf.mockRejectedValue(new Error('Bad request'));
     const bundle = {

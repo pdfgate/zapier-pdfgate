@@ -1,15 +1,5 @@
-import { envelopeInProgress } from '../../src/triggers/envelopeInProgress';
+import { envelopeSent } from '../../src/triggers/envelopeSent';
 import { envelopeCompleted } from '../../src/triggers/envelopeCompleted';
-import { envelopeExpired } from '../../src/triggers/envelopeExpired';
-import { verifySignature, PdfGateSignatureVerificationError } from 'pdfgate';
-
-jest.mock('pdfgate', () => ({
-  verifySignature: jest.fn(),
-  PdfGateSignatureVerificationError: class extends Error {},
-  default: jest.fn(),
-}));
-
-const mockVerifySignature = verifySignature as jest.Mock;
 
 const z = {
   errors: { Error: class extends Error {} },
@@ -20,80 +10,58 @@ const makeBundle = (event: string, subscribeSecret = 'secret123') => ({
   authData: { apiKey: 'test_key' },
   subscribeData: { id: 'wh_123', secret: subscribeSecret },
   rawRequest: {
-    headers: { 'x-pdfgate-signature': 'v1=abc,t=123' },
+    headers: {
+      'content-type': 'application/json',
+      'x-pdfgate-signature': 'v1=abc,t=123',
+    },
     content: JSON.stringify({ event, envelopeId: 'env_1', status: event.split('.')[1] }),
   },
   cleanedRequest: {
-    data: { event, envelopeId: 'env_1', status: event.split('.')[1] },
+    event,
+    envelopeId: 'env_1',
+    status: event.split('.')[1],
   },
 });
 
 describe('envelope triggers', () => {
   beforeEach(() => {
     z.request.mockReset();
-    mockVerifySignature.mockReturnValue(undefined);
   });
 
-  it('envelopeInProgress passes through envelope.sent events', async () => {
+  it('envelopeSent passes through envelope.sent events', async () => {
     const bundle = makeBundle('envelope.sent') as any;
-    const result = await (envelopeInProgress.operation.perform as Function)(z, bundle);
-    expect(result).toEqual([bundle.cleanedRequest.data]);
+    const result = await (envelopeSent.operation.perform as Function)(z, bundle);
+    expect(result).toEqual([bundle.cleanedRequest]);
   });
 
-  it('envelopeInProgress filters out other event types', async () => {
+  it('envelopeSent filters out other event types', async () => {
     const bundle = makeBundle('envelope.completed') as any;
-    const result = await (envelopeInProgress.operation.perform as Function)(z, bundle);
+    const result = await (envelopeSent.operation.perform as Function)(z, bundle);
     expect(result).toEqual([]);
   });
 
   it('envelopeCompleted passes through envelope.completed events', async () => {
     const bundle = makeBundle('envelope.completed') as any;
     const result = await (envelopeCompleted.operation.perform as Function)(z, bundle);
-    expect(result).toEqual([bundle.cleanedRequest.data]);
+    expect(result).toEqual([bundle.cleanedRequest]);
   });
 
-  it('envelopeExpired passes through envelope.expired events', async () => {
-    const bundle = makeBundle('envelope.expired') as any;
-    const result = await (envelopeExpired.operation.perform as Function)(z, bundle);
-    expect(result).toEqual([bundle.cleanedRequest.data]);
-  });
-
-  it('throws z.errors.Error on signature verification failure', async () => {
-    mockVerifySignature.mockImplementation(() => {
-      throw new (PdfGateSignatureVerificationError as any)('Bad signature');
-    });
-    const bundle = makeBundle('envelope.completed') as any;
-
-    await expect(
-      (envelopeCompleted.operation.perform as Function)(z, bundle),
-    ).rejects.toBeInstanceOf(z.errors.Error);
-  });
-
-  it('calls verifySignature with secret, header, and raw body', async () => {
-    const bundle = makeBundle('envelope.completed') as any;
-    await (envelopeCompleted.operation.perform as Function)(z, bundle);
-
-    expect(mockVerifySignature).toHaveBeenCalledWith(
-      'secret123',
-      'v1=abc,t=123',
-      bundle.rawRequest.content,
-    );
-  });
-
-  it('uses legacy auth webhookSecret when subscribeData has no secret', async () => {
+  it('uses cleanedRequest as the live webhook payload', async () => {
     const bundle = {
-      ...makeBundle('envelope.completed', undefined),
-      authData: { apiKey: 'test_key', webhookSecret: 'legacy_secret' },
-      subscribeData: { id: 'wh_123' },
+      ...makeBundle('envelope.completed'),
+      rawRequest: {
+        headers: {},
+        content: '',
+      },
+      cleanedRequest: {
+        event: 'envelope.completed',
+        envelopeId: 'env_1',
+      },
     } as any;
 
-    await (envelopeCompleted.operation.perform as Function)(z, bundle);
+    const result = await (envelopeCompleted.operation.perform as Function)(z, bundle);
 
-    expect(mockVerifySignature).toHaveBeenCalledWith(
-      'legacy_secret',
-      'v1=abc,t=123',
-      bundle.rawRequest.content,
-    );
+    expect(result).toEqual([bundle.cleanedRequest]);
   });
 
   it('subscribes envelopeCompleted through the PDFGate webhook API', async () => {
@@ -120,14 +88,14 @@ describe('envelope triggers', () => {
     expect(result).toEqual({ id: 'wh_123', secret: 'whsecret_123' });
   });
 
-  it('subscribes envelopeInProgress with envelope.sent', async () => {
+  it('subscribes envelopeSent with envelope.sent', async () => {
     z.request.mockResolvedValue({ data: { id: 'wh_123', secret: 'whsecret_123' } });
     const bundle = {
       authData: { apiKey: 'live_key' },
       targetUrl: 'https://hooks.zapier.com/hooks/catch/123',
     } as any;
 
-    await (envelopeInProgress.operation.performSubscribe as Function)(z, bundle);
+    await (envelopeSent.operation.performSubscribe as Function)(z, bundle);
 
     expect(z.request).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -147,7 +115,7 @@ describe('envelope triggers', () => {
       subscribeData: { id: 'wh_123', secret: 'whsecret_123' },
     } as any;
 
-    const result = await (envelopeExpired.operation.performUnsubscribe as Function)(z, bundle);
+    const result = await (envelopeCompleted.operation.performUnsubscribe as Function)(z, bundle);
 
     expect(z.request).toHaveBeenCalledWith({
       url: 'https://api-sandbox.pdfgate.com/webhook/wh_123',
@@ -159,19 +127,17 @@ describe('envelope triggers', () => {
     expect(result).toEqual({ success: true });
   });
 
-  it('loads backend sample payloads', async () => {
-    z.request.mockResolvedValue({ data: { event: 'envelope.completed' } });
+  it('returns static trigger samples from performList', async () => {
     const bundle = { authData: { apiKey: 'test_key' } } as any;
 
-    const result = await (envelopeCompleted.operation.performList as Function)(z, bundle);
+    const completed = await (envelopeCompleted.operation.performList as Function)(z, bundle);
+    const sent = await (envelopeSent.operation.performList as Function)(z, bundle);
 
-    expect(z.request).toHaveBeenCalledWith({
-      url: 'https://api-sandbox.pdfgate.com/webhook/envelope-completed-sample',
-      method: 'GET',
-      headers: {
-        Authorization: 'Bearer test_key',
-      },
+    expect(z.request).not.toHaveBeenCalled();
+    expect(completed[0]).toMatchObject({
+      event: 'envelope.completed',
+      data: { envelope: { status: 'completed' } },
     });
-    expect(result).toEqual([{ event: 'envelope.completed' }]);
+    expect(sent[0]).toMatchObject({ event: 'envelope.sent' });
   });
 });

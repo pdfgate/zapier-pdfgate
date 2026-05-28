@@ -28,7 +28,13 @@ describe('protectPdf action', () => {
   it('calls protectPdf with documentId and algorithm', async () => {
     const bundle = {
       authData: { apiKey: 'test_key' },
-      inputData: { documentId: 'doc_123', algorithm: 'AES256', userPassword: 'secret' },
+      inputData: {
+        documentId: 'doc_123',
+        algorithm: 'AES256',
+        userAccessCode: 'secret',
+        ownerAccessCode: 'owner-secret',
+        metadata: '{"source":"zapier"}',
+      },
     } as any;
 
     const result = await (protectPdf.operation.perform as Function)(z, bundle);
@@ -37,8 +43,36 @@ describe('protectPdf action', () => {
       documentId: 'doc_123',
       algorithm: 'AES256',
       userPassword: 'secret',
+      ownerPassword: 'owner-secret',
+      metadata: { source: 'zapier' },
     });
     expect(result).toEqual(mockDocument);
+  });
+
+  it('maps legacy pin fields to password params', async () => {
+    const bundle = {
+      authData: { apiKey: 'test_key' },
+      inputData: { documentId: 'doc_123', userPin: 'secret', ownerPin: 'owner-secret' },
+    } as any;
+
+    await (protectPdf.operation.perform as Function)(z, bundle);
+
+    expect(mockClient.protectPdf).toHaveBeenCalledWith({
+      documentId: 'doc_123',
+      userPassword: 'secret',
+      ownerPassword: 'owner-secret',
+    });
+  });
+
+  it('throws z.errors.Error when metadata is invalid JSON', async () => {
+    const bundle = {
+      authData: { apiKey: 'test_key' },
+      inputData: { documentId: 'doc_123', metadata: 'not-json' },
+    } as any;
+
+    await expect((protectPdf.operation.perform as Function)(z, bundle)).rejects.toBeInstanceOf(
+      z.errors.Error,
+    );
   });
 
   it('rethrows API errors as z.errors.Error', async () => {

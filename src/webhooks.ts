@@ -54,15 +54,43 @@ export const getWebhookSample = async (
   z: ZObject,
   bundle: Bundle,
   samplePath: string,
+  fallbackSample?: object,
+  expectedEvent?: string,
 ): Promise<object[]> => {
   const apiKey = bundle.authData.apiKey as string;
-  const response = await z.request({
-    url: `${getApiBaseUrl(apiKey)}/webhook/${samplePath}`,
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
-  });
+  try {
+    const response = await z.request({
+      url: `${getApiBaseUrl(apiKey)}/webhook/${samplePath}`,
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+      },
+    });
 
-  return [response.data];
+    if (
+      response.data &&
+      (!expectedEvent || response.data.event === expectedEvent) &&
+      response.data.data?.envelope?.id
+    ) {
+      return [response.data];
+    }
+
+    if (!fallbackSample && !expectedEvent) {
+      return [response.data];
+    }
+
+    if (!fallbackSample) {
+      throw new z.errors.Error(
+        `The ${samplePath} endpoint returned an invalid sample for this account.`,
+      );
+    }
+  } catch {
+    if (!fallbackSample) {
+      throw new z.errors.Error(
+        `Could not load a valid ${samplePath} sample for this account.`,
+      );
+    }
+  }
+
+  return fallbackSample ? [fallbackSample] : [];
 };

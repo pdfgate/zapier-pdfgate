@@ -2,10 +2,25 @@ import { Bundle, ZObject } from 'zapier-platform-core';
 import { getClient, withErrorHandling } from '../client';
 
 const SAMPLE = {
-  id: 'env_sample',
+  id: '69f5b65d131aa112dbssa',
   status: 'in_progress',
-  documents: [],
-  createdAt: '2024-01-01T00:00:00.000Z',
+  documents: [
+    {
+      sourceDocumentId: '69f5b65d131aa112dbzzd',
+      name: 'Sample Agreement.pdf',
+      status: 'pending',
+      recipients: [
+        {
+          email: 'recipient@example.com',
+          name: 'Sample Recipient',
+          status: 'pending',
+          signingLink:
+            'https://document-sandbox.pdfgate.com/sign/dfbdfbdbfjbfbdfbsdsfdsfdsfsdssd',
+        },
+      ],
+    },
+  ],
+  createdAt: '2026-05-26T00:00:00.000Z',
 };
 
 export const sendEnvelope = {

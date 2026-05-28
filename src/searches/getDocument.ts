@@ -2,13 +2,13 @@ import { Bundle, ZObject } from 'zapier-platform-core';
 import { getClient, withErrorHandling } from '../client';
 
 const SAMPLE = {
-  id: 'doc_sample',
+  id: '6a12d80d8ce4ed8f2d3e5b86',
   status: 'completed',
   type: 'from_html',
-  fileUrl: 'https://example.com/sample.pdf',
+  fileUrl: 'https://api.pdfgate.com/file/open/dfdgd_token',
   size: 102400,
   createdAt: '2024-01-01T00:00:00.000Z',
-  expiresAt: '2024-01-08T00:00:00.000Z',
+  expiresAt: '2024-02-01T00:00:00.000Z',
 };
 
 export const getDocument = {

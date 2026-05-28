@@ -28,7 +28,12 @@ describe('watermarkPdf action', () => {
   it('calls watermarkPdf with type text and provided fields', async () => {
     const bundle = {
       authData: { apiKey: 'test_key' },
-      inputData: { documentId: 'doc_123', text: 'CONFIDENTIAL', opacity: 0.5 },
+      inputData: {
+        documentId: 'doc_123',
+        text: 'CONFIDENTIAL',
+        opacity: 0.5,
+        metadata: '{"source":"zapier"}',
+      },
     } as any;
 
     const result = await (watermarkPdf.operation.perform as Function)(z, bundle);
@@ -37,9 +42,21 @@ describe('watermarkPdf action', () => {
       documentId: 'doc_123',
       text: 'CONFIDENTIAL',
       opacity: 0.5,
+      metadata: { source: 'zapier' },
       type: 'text',
     });
     expect(result).toEqual(mockDocument);
+  });
+
+  it('throws z.errors.Error when metadata is invalid JSON', async () => {
+    const bundle = {
+      authData: { apiKey: 'test_key' },
+      inputData: { documentId: 'doc_123', text: 'DRAFT', metadata: 'not-json' },
+    } as any;
+
+    await expect((watermarkPdf.operation.perform as Function)(z, bundle)).rejects.toBeInstanceOf(
+      z.errors.Error,
+    );
   });
 
   it('rethrows API errors as z.errors.Error', async () => {

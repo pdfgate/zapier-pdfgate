@@ -1,6 +1,6 @@
 import { Bundle, ZObject } from 'zapier-platform-core';
 
-const getApiBaseUrl = (apiKey: string): string => {
+export const getApiBaseUrl = (apiKey: string): string => {
   return apiKey.startsWith('test_')
     ? 'https://api-sandbox.pdfgate.com'
     : 'https://api.pdfgate.com';

@@ -1,15 +1,21 @@
 import { Bundle, ZObject } from 'zapier-platform-core';
-import { getClient } from './client';
+import { getApiBaseUrl } from './webhooks';
 
 const test = async (z: ZObject, bundle: Bundle): Promise<void> => {
-  const client = getClient(bundle);
+  const apiKey = bundle.authData.apiKey as string;
   try {
-    await client.getDocument({ id: 'auth-test' });
+    await z.request({
+      url: `${getApiBaseUrl(apiKey)}/auth`,
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+      },
+    });
   } catch (err: any) {
     if (err.status === 401 || (err.message && err.message.includes('401'))) {
       throw new z.errors.Error('Invalid PDFGate API key.');
     }
-    // 404 = key is valid, document just doesn't exist — this is expected
+    throw err;
   }
 };
 

@@ -203,7 +203,7 @@ export const createEnvelope = {
         label: 'Documents Instructions',
         type: 'copy' as const,
         helpText:
-          'Add one row per document. Recipient 1 is required. Recipients 2-4 are optional.',
+          'Provide the document to include in the envelope. Recipient 1 is required. Recipients 2-4 are optional.',
       },
       {
         key: 'documents',

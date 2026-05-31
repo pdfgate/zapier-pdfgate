@@ -15,7 +15,7 @@ export const extractFormData = {
         label: 'Document ID',
         type: 'string' as const,
         required: true,
-        helpText: 'The ID of the PDFGate document to extract form data from.',
+        helpText: 'The ID of the PDFGate document.',
       },
     ],
     perform: async (z: ZObject, bundle: Bundle) => {

@@ -31,7 +31,7 @@ export const getDocument = {
         label: 'Pre-Signed URL Expiry (seconds)',
         type: 'integer' as const,
         required: false,
-        helpText: 'Generate a fresh download URL expiring in this many seconds (min 60, max 86400).',
+        helpText: 'Number of seconds the returned fileUrl remains valid. Allowed range: 60 to 86400 seconds.',
       },
     ],
     perform: async (z: ZObject, bundle: Bundle) => {

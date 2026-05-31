@@ -319,10 +319,10 @@ export const createEnvelope = {
       },
       {
         key: 'metadata',
-        label: 'Metadata (JSON)',
+        label: 'Metadata',
         type: 'json' as const,
         required: false,
-        helpText: 'Custom data to store on the envelope record.',
+        helpText: 'Optional metadata as JSON key-value pairs. Example: {"customerId":"123","invoiceId":"INV-001"}',
         schema: {
           type: 'object',
           additionalProperties: true,

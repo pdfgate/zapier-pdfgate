@@ -46,21 +46,22 @@ export const uploadFile = {
         label: 'File URL',
         type: 'string' as const,
         required: true,
-        helpText: 'Public URL of the PDF file to upload.',
+        helpText:
+          'Publicly accessible URL of the PDF you want to upload to PDFGate. You can map this from a file upload trigger, Google Drive, Dropbox, S3, or any previous step that returns a file URL. PDFGate will fetch the PDF from this URL and store it, so you can reuse the uploaded document in later actions such as Flatten, Watermark, Protect, Compress, and more.',
       },
       {
         key: 'preSignedUrlExpiresIn',
         label: 'Pre-Signed URL Expiry (seconds)',
         type: 'integer' as const,
         required: false,
-        helpText: 'Seconds until the file URL expires (min 60, max 86400).',
+        helpText: 'Number of seconds the returned fileUrl remains valid. Allowed range: 60 to 86400 seconds.',
       },
       {
         key: 'metadata',
-        label: 'Metadata (JSON)',
+        label: 'Metadata',
         type: 'json' as const,
         required: false,
-        helpText: 'Custom data to store on the document record.',
+        helpText: 'Optional metadata as JSON key-value pairs. Example: {"customerId":"123","invoiceId":"INV-001"}.',
         schema: {
           type: 'object',
           additionalProperties: true,

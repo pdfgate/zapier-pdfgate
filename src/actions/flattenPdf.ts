@@ -46,20 +46,23 @@ export const flattenPdf = {
         label: 'Document ID',
         type: 'string' as const,
         required: true,
-        helpText: 'The ID of the PDFGate document to flatten.',
+        helpText: 'ID of an existing PDFGate document.',
       },
       {
         key: 'preSignedUrlExpiresIn',
-        label: 'Pre-Signed URL Expiry (seconds)',
+        label: 'Pre-signed URL Expiry (seconds)',
         type: 'integer' as const,
         required: false,
+        helpText:
+          'Number of seconds the returned fileUrl remains valid. Allowed range: 60 to 86400 seconds.',
       },
       {
         key: 'metadata',
-        label: 'Metadata (JSON)',
+        label: 'Metadata',
         type: 'json' as const,
         required: false,
-        helpText: 'Custom data to store on the document record.',
+        helpText:
+          'Optional metadata as JSON key-value pairs. Example: {"customerId":"123","invoiceId":"INV-001"}',
         schema: {
           type: 'object',
           additionalProperties: true,

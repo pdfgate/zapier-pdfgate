@@ -96,23 +96,25 @@ export const generatePdf = {
   operation: {
     inputFields: [
       {
-        key: 'html',
-        label: 'HTML',
-        type: 'text' as const,
-        helpText: 'Raw HTML to render as a PDF. Provide either this or URL.',
-      },
-      {
         key: 'url',
         label: 'URL',
         type: 'string' as const,
-        helpText: 'The URL to render as a PDF. Provide either this or HTML.',
+        helpText:
+          "Public URL whose rendered content should be converted to PDF. Required if 'HTML Content' is not provided.",
+      },
+      {
+        key: 'html',
+        label: 'HTML Content',
+        type: 'text' as const,
+        helpText: "Raw HTML markup to convert to PDF. Required if 'URL' is not provided.",
       },
       {
         key: 'preSignedUrlExpiresIn',
-        label: 'Pre-Signed URL Expiry (seconds)',
+        label: 'Pre-signed URL Expiry (seconds)',
         type: 'integer' as const,
         required: false,
-        helpText: 'Seconds until the file URL expires (min 60, max 86400).',
+        helpText:
+          'Number of seconds the returned fileUrl remains valid. Allowed range: 60 to 86400 seconds.',
       },
       {
         key: 'pageSizeType',
@@ -120,27 +122,31 @@ export const generatePdf = {
         type: 'string' as const,
         required: false,
         choices: ['a0', 'a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'ledger', 'tabloid', 'legal', 'letter'],
+        helpText: 'PDF page size.',
       },
       {
         key: 'enableFormFields',
-        label: 'Enable Form Fields',
+        label: 'Enable Fillable Form Fields',
         type: 'boolean' as const,
         required: false,
-        helpText: 'Includes supported interactive HTML form fields in the generated PDF.',
+        helpText:
+          'If true, HTML input fields are rendered as interactive PDF form fields. Supports text, checkbox, textarea, select, email, number, date/time, radio, and pdfgate-signature-field.',
       },
       {
         key: 'width',
-        label: 'Width',
+        label: 'Custom Width (px)',
         type: 'number' as const,
         required: false,
-        helpText: 'Custom PDF file width in pixels. Must be provided with Height.',
+        helpText:
+          'Custom PDF width in pixels. Must be used together with Custom Height. If used, it overrides the Page Size.',
       },
       {
         key: 'height',
-        label: 'Height',
+        label: 'Custom Height (px)',
         type: 'number' as const,
         required: false,
-        helpText: 'Custom PDF file height in pixels. Must be provided with Width.',
+        helpText:
+          'Custom PDF height in pixels. Must be used together with Custom Width. If used, it overrides the Page Size.',
       },
       {
         key: 'orientation',
@@ -148,67 +154,76 @@ export const generatePdf = {
         type: 'string' as const,
         required: false,
         choices: ['portrait', 'landscape'],
+        helpText: 'Page orientation. Options: portrait, landscape.',
       },
       {
         key: 'header',
-        label: 'Header',
+        label: 'Header HTML',
         type: 'text' as const,
         required: false,
-        helpText: 'HTML content to render in the PDF page header. Top Margin must also be set.',
+        helpText:
+          'HTML snippet rendered as the page header on every PDF page. Note: Margin Top must also be set so the header has enough space to appear correctly.',
       },
       {
         key: 'footer',
-        label: 'Footer',
+        label: 'Footer HTML',
         type: 'text' as const,
         required: false,
-        helpText: 'HTML content to render in the PDF page footer. Bottom Margin must also be set.',
+        helpText:
+          'HTML snippet rendered as the page footer on every PDF page. Note: you also need to set Margin Bottom to make space for the footer, for example 80px or 2cm.',
       },
       {
         key: 'marginTop',
-        label: 'Top Margin',
+        label: 'Margin Top',
         type: 'string' as const,
         required: false,
-        helpText: 'Top page margin, such as `20px`, `1in`, or `2cm`.',
+        helpText:
+          'Set the top margin of the generated PDF. Use CSS-style length values such as 20px, 1cm, 10mm, or 0.5in.',
       },
       {
         key: 'marginBottom',
-        label: 'Bottom Margin',
+        label: 'Margin Bottom',
         type: 'string' as const,
         required: false,
-        helpText: 'Bottom page margin, such as `20px`, `1in`, or `2cm`.',
+        helpText:
+          'Set the bottom margin of the generated PDF. Use CSS-style length values such as 20px, 1cm, 10mm, or 0.5in.',
       },
       {
         key: 'marginLeft',
-        label: 'Left Margin',
+        label: 'Margin Left',
         type: 'string' as const,
         required: false,
-        helpText: 'Left page margin, such as `20px`, `1in`, or `2cm`.',
+        helpText:
+          'Set the left margin of the generated PDF. Use CSS-style length values such as 20px, 1cm, 10mm, or 0.5in.',
       },
       {
         key: 'marginRight',
-        label: 'Right Margin',
+        label: 'Margin Right',
         type: 'string' as const,
         required: false,
-        helpText: 'Right page margin, such as `20px`, `1in`, or `2cm`.',
+        helpText:
+          'Set the right margin of the generated PDF. Use CSS-style length values such as 20px, 1cm, 10mm, or 0.5in.',
       },
       {
         key: 'timeout',
-        label: 'Timeout (milliseconds)',
+        label: 'Render Timeout (milliseconds)',
         type: 'integer' as const,
         required: false,
-        helpText: 'Maximum wait time to render HTML content. Maximum is 900000 ms.',
+        helpText: 'Maximum wait time for HTML to render.',
       },
       {
         key: 'javascript',
-        label: 'JavaScript',
+        label: 'Inject JavaScript',
         type: 'code' as const,
         required: false,
+        helpText: 'JavaScript code to be executed on the page before PDF capture.',
       },
       {
         key: 'css',
-        label: 'CSS',
+        label: 'Inject CSS',
         type: 'code' as const,
         required: false,
+        helpText: 'CSS rules injected into the page before PDF capture.',
       },
       {
         key: 'emulateMediaType',
@@ -216,18 +231,18 @@ export const generatePdf = {
         type: 'string' as const,
         required: false,
         choices: ['screen', 'print'],
-        helpText: 'Sets the CSS media type of the document.',
+        helpText: 'Force a specific CSS media type. Options: screen, print.',
       },
       {
         key: 'waitForSelector',
-        label: 'Wait for Selector',
+        label: 'Wait For CSS Selector',
         type: 'string' as const,
         required: false,
         helpText: 'Waits for a CSS selector to load. Times out after 30 seconds.',
       },
       {
         key: 'clickSelector',
-        label: 'Click Selector',
+        label: 'Click CSS Selector',
         type: 'string' as const,
         required: false,
         helpText: 'Waits for and clicks a CSS selector before generating the PDF.',
@@ -261,49 +276,53 @@ export const generatePdf = {
       },
       {
         key: 'waitForNetworkIdle',
-        label: 'Wait for Network Idle',
+        label: 'Wait For Network Idle',
         type: 'boolean' as const,
         required: false,
+        helpText: 'If true, waits until there are no active network connections in the page before generating the PDF.',
       },
       {
         key: 'delay',
-        label: 'Delay (milliseconds)',
+        label: 'Render Delay (milliseconds)',
         type: 'integer' as const,
         required: false,
-        helpText: 'Delay before generating the PDF. Maximum is 20000 ms.',
+        helpText:
+          'Adds a delay before generating the PDF. Max 20000 (20 seconds). It is useful for async content.',
       },
       {
         key: 'loadImages',
         label: 'Load Images',
         type: 'boolean' as const,
         required: false,
-        helpText: 'Waits for all images to finish loading before generating the PDF.',
+        helpText: 'If true, waits for all images to finish loading before generating the PDF.',
       },
       {
         key: 'scale',
-        label: 'Scale',
+        label: 'Page Scale',
         type: 'number' as const,
         required: false,
-        helpText: 'Page scale factor. Accepts values between 0.1 and 2.',
+        helpText: 'Page scale factor. Accepts values between 0.1 and 2..',
       },
       {
         key: 'pageRanges',
         label: 'Page Ranges',
         type: 'string' as const,
         required: false,
-        helpText: 'Page ranges to include, such as "1-5" or "1,3,5".',
+        helpText: "Pages to include, e.g. '1-5' or '1,3,5'. If empty, all pages are included.",
       },
       {
         key: 'printBackground',
-        label: 'Print Background',
+        label: 'Print Backgrounds',
         type: 'boolean' as const,
         required: false,
+        helpText: 'If true, background graphics are included in the PDF.',
       },
       {
         key: 'userAgent',
         label: 'User Agent',
         type: 'string' as const,
         required: false,
+        helpText: 'Custom User-Agent string used when fetching the page.',
       },
       {
         key: 'httpHeaders',
@@ -342,10 +361,11 @@ export const generatePdf = {
       },
       {
         key: 'metadata',
-        label: 'Metadata (JSON)',
+        label: 'Metadata',
         type: 'json' as const,
         required: false,
-        helpText: 'Custom data to store on the document record.',
+        helpText:
+          'Optional metadata as JSON key-value pairs. Example: {"customerId":"123","invoiceId":"INV-001"}',
         schema: {
           type: 'object',
           additionalProperties: true,

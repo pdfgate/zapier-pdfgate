@@ -15,6 +15,7 @@ Actions:
 - Watermark PDF
 - Create Envelope
 - Send Envelope
+- Delete Document
 
 Searches:
 

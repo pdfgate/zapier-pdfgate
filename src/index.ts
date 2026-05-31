@@ -9,6 +9,7 @@ import { protectPdf } from './actions/protectPdf';
 import { watermarkPdf } from './actions/watermarkPdf';
 import { createEnvelope } from './actions/createEnvelope';
 import { sendEnvelope } from './actions/sendEnvelope';
+import { deleteDocument } from './actions/deleteDocument';
 import { getDocument } from './searches/getDocument';
 import { getEnvelope } from './searches/getEnvelope';
 import { envelopeSent } from './triggers/envelopeSent';
@@ -44,6 +45,7 @@ const App = {
     [watermarkPdf.key]: watermarkPdf,
     [createEnvelope.key]: createEnvelope,
     [sendEnvelope.key]: sendEnvelope,
+    [deleteDocument.key]: deleteDocument,
   },
 };
 
